@@ -1,6 +1,6 @@
-Nigeria Economic Data Pipeline
+*Nigeria Economic Data Pipeline*
 
-Project Overview
+*Project Overview*
 
 This project is an end-to-end data engineering pipeline that automates the collection, transformation, and storage of Nigerian economic indicators (Exchange Rates and Inflation). Using a Medallion Architecture, the pipeline converts raw API data into business-ready insights, providing a "Gold" standard dataset for economic analysis and growth tracking.
 
