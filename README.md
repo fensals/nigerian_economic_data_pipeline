@@ -8,6 +8,7 @@ This is an end-to-end data pipeline that ingests Nigerian economic data using th
 The project uses the medallion architecture with the bronze and silver layers in hdfs (hadoop) and then the transformed data is finally into a gold layer in a  PostgreSQL database for further analytics.
 
 
+
 2. Architecture
 Orchestration: Airflow  running in Docker.
 
@@ -20,6 +21,7 @@ Processing: PySpark (Transformations).
 Serving: PostgreSQL Database.
 
 
+
 3. Major Challenges & Solutions
 
 Challenge: Docker-in-Docker pathing and permission "Access Denied" errors during volume mounting.
@@ -28,5 +30,5 @@ Solution: Implemented internal container bridging (/opt/spark-apps) and configur
 
 Challenge: SSL/Handshake failures during driver downloads in docker.
 
-Solution: had to download the .jar file and injected via --jars and implemented custom DNS (8.8.8.8) for the docker environment.
+Solution: had to download the .jar file (postgresql-42.7.2.jar) which was placed in the spark-apps folder and injected via --jars.
 
