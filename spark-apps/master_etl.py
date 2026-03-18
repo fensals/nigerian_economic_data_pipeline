@@ -5,11 +5,15 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, to_date, avg, month, year, lit
 from pyspark.sql import functions as F
 from pyspark.sql import Window
+import os
 
 #API urls
 FX_URL = "https://www.cbn.gov.ng/api/GetAllExchangeRates"
 INF_URL = "https://www.cbn.gov.ng/api/GetAllInflationRates"
 
+
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 # HDFS Connection 
 hdfs_client = InsecureClient('http://hdfs-namenode:9870', user='root')
@@ -117,26 +121,34 @@ def run_cbn_etl():
             F.max("central_rate").alias("peak_usd_rate")
         )
 
-    # Join both datasets on year and month, and select the relevant columns for the final gold layer
+    
     df_merged = df_usd_monthly.join(
         df_cpi_silver.withColumn("year", F.year("report_date")).withColumn("month", F.month("report_date")),
         on=["year", "month"],
         how="inner"
-    ).select(
-        "year", "month", "avg_usd_rate", "usd_volatility", 
-        "headline_inflation", "food_inflation"
-    ).orderBy(F.col("year").desc(), F.col("month").desc())
+    ).withColumn(
+        "report_date", 
+        F.to_date(F.concat(F.col("year"), F.lit("-"), F.col("month"), F.lit("-01")))
+    )
 
+    
+    window_start = Window.orderBy("report_date")
 
-    #Define window to look at the earliest data (2006) for comparison, get base value and get growth index
-    window_start = Window.orderBy("year", "month")
-
+    # 3. Calculate metrics and KEEP usd_volatility in the final select
     df_final = df_merged.withColumn("first_usd", F.first("avg_usd_rate").over(window_start)) \
         .withColumn("first_cpi", F.first("headline_inflation").over(window_start)) \
         .withColumn("usd_growth_index", F.round((F.col("avg_usd_rate") / F.col("first_usd")) * 100, 2)) \
         .withColumn("inflation_growth_index", F.round((F.col("headline_inflation") / F.col("first_cpi")) * 100, 2)) \
-        .select("year", "month", "avg_usd_rate", "headline_inflation", "usd_growth_index", "inflation_growth_index") \
-        .orderBy(F.col("year").desc(), F.col("month").desc())
+        .select(
+            "report_date", 
+            "year", "month", 
+            "avg_usd_rate", 
+            "usd_volatility",        
+            "headline_inflation", 
+            "usd_growth_index", 
+            "inflation_growth_index"
+        ) \
+        .orderBy(F.col("report_date").desc())
 
 
     # SERVING LAYER (Postgres)

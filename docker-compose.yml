@@ -25,30 +25,6 @@ services:
       - hdfs-dn-data:/hadoop/dfs/data
     networks:
       - hadoopnet
-  # hdfs-namenode:
-  #   image: apache/hadoop:3.3.6
-  #   container_name: hdfs-namenode
-  #   environment:
-  #     - ENSURE_NAMENODE_DIR=/tmp/hadoop-root/dfs/name
-  #   ports:
-  #     - "9870:9870"
-  #   volumes:
-  #     - hdfs-nn-data:/opt/hadoop/data/name
-  #   networks:
-  #     - hadoopnet
-
-  # hdfs-datanode:
-  #   image: apache/hadoop:3.3.6
-  #   container_name: hdfs-datanode
-  #   depends_on:
-  #     - hdfs-namenode
-  #   command: ["datanode"]
-  #   environment:
-  #     - HDFS_CONF_dfs_replication=1
-  #   volumes:
-  #     - hdfs-dn-data:/opt/hadoop/data/data
-  #   networks:
-  #     - hadoopnet
 
   spark-master:
     image: apache/spark:3.5.0
@@ -63,6 +39,8 @@ services:
   spark-worker:
     image: apache/spark:3.5.0
     container_name: spark-worker
+    env_file:
+      - .env
     depends_on:
       - spark-master
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
@@ -82,7 +60,6 @@ services:
       - GRANT_SUDO=yes
       - JUPYTER_TOKEN=""
       - JUPYTER_PASSWORD=""
-    # The command below is the "Master Key" to bypass the login screen
     command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
 
 
@@ -95,11 +72,11 @@ services:
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=airflow
     volumes:
-      - airflow_db_data:/var/lib/postgresql/data  # Change this volume name!
+      - airflow_db_data:/var/lib/postgresql/data 
     networks:
       - hadoopnet
 
-  # This service initializes the DB and creates the admin user
+  
   airflow-init:
     image: apache/airflow:2.8.1
     depends_on:
@@ -152,8 +129,8 @@ services:
     image: postgres:15
     container_name: cbn_postgres
     environment:
-      POSTGRES_USER: fensals
-      POSTGRES_PASSWORD: fensals
+      POSTGRES_USER: {DB_USER}
+      POSTGRES_PASSWORD: {DB_PASSWORD}
       POSTGRES_DB: cbn_analytics
     ports:
       - "5432:5432"
