@@ -9,7 +9,7 @@ The project uses the medallion architecture with the bronze and silver layers in
 
 
 
-2. Architecture
+### Architecture
 Orchestration: Airflow  running in Docker.
 
 Ingestion: Python Requests pulling data from API endpoint.
@@ -22,7 +22,7 @@ Serving: PostgreSQL Database.
 
 
 
-3. Major Challenges & Solutions
+###Major Challenges & Solutions
 
 Challenge: Docker-in-Docker pathing and permission "Access Denied" errors during volume mounting.
 
