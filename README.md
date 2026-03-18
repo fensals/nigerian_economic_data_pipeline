@@ -1,10 +1,10 @@
-*Nigeria Economic Data Pipeline*
+*Nigerian Economic Indicators - Data Pipeline*
 
 *Project Overview*
 
 This project is an end-to-end data engineering pipeline that automates the collection, transformation, and storage of Nigerian economic indicators (Exchange Rates and Inflation). Using a Medallion Architecture, the pipeline converts raw API data into business-ready insights, providing a "Gold" standard dataset for economic analysis and growth tracking.
 
-Tech Stack
+*Tech Stack*
 
 Orchestration: Apache Airflow
 
@@ -18,15 +18,18 @@ Containerization: Docker
 
 Environment: WSL2 / Ubuntu
 
-Data Architecture
+
+*Data Architecture*
 
 The pipeline follows the Medallion (Multi-Hop) Architecture to ensure data quality and lineage:
+
 
 Bronze (Landing):
 
 Python scripts fetch raw JSON data from the Central Bank of Nigeria (CBN) API.
 
 Data is stored in HDFS at /cbn_project/landing/ in its original format to allow for future reprocessing.
+
 
 Silver (Cleaned):
 
@@ -36,6 +39,7 @@ Filtering logic extracts specific indicators (e.g., US Dollar rates).
 
 Stored as Parquet files in HDFS for high-performance distributed reads.
 
+
 Gold (Analytics):
 
 Business logic is applied: calculating Volatility and Growth Indices (Base-100).
@@ -44,7 +48,7 @@ Data is joined into a unified macro-economic table.
 
 The final dataset is loaded into PostgreSQL for BI and visualization.
 
-Orchestration & Idempotency
+Orchestration
 The pipeline is managed by an Airflow DAG (cbn_economic_pipeline) with the following features:
 
 Containerized Execution: Airflow triggers a temporary Docker container to run Spark jobs, ensuring a clean production environment.
@@ -68,7 +72,7 @@ USD Growth Index: Tracking the cumulative devaluation of the Naira against the U
 Inflation vs. FX Correlation: Analyzing how food inflation responds to exchange rate volatility.
 
 How to Run
-Clone the Repo: git clone ...
+Clone the Repo: git clone 
 
 Start the Stack: docker-compose up -d
 
