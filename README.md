@@ -1,7 +1,7 @@
 
-Automated CBN Macro-Economic Data Pipeline
+## Automated CBN Macro-Economic Data Pipeline
 
-Tech Stack: Python, Apache Airflow, Spark (PySpark), Docker, HDFS, PostgreSQL.
+#### Tech Stack: Python, Apache Airflow, Spark (PySpark), Docker, HDFS, PostgreSQL.
 
 
 This is an end-to-end data pipeline that ingests Nigerian economic data using the Central Bank of Nigeria (CBN)'s API endpoint  through a distributed Spark cluster.
@@ -22,7 +22,7 @@ Serving: PostgreSQL Database.
 
 
 
-###Major Challenges & Solutions
+### Major Challenges & Solutions
 
 Challenge: Docker-in-Docker pathing and permission "Access Denied" errors during volume mounting.
 
